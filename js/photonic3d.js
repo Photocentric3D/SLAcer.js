@@ -17,14 +17,29 @@ function setPrinterCallibrationSettings(printer) {
 	var buildVolXmm = Math.round(monitorDriverConfig.DLP_X_Res / dotsPermmXYAverage);
 	var buildVolYmm = Math.round(monitorDriverConfig.DLP_Y_Res / dotsPermmXYAverage);
 
-	$buildVolumeX.val(buildVolXmm);
-	$buildVolumeY.val(buildVolYmm);
-	updateBuildVolumeSettings();
+	// $buildVolumeX.val(buildVolXmm);
+	// $buildVolumeY.val(buildVolYmm);
+	// updateBuildVolumeSettings();
+    
+    var unit = $('#build-volume input[type=radio]:checked').val();
+
+    settings.set('buildVolume', {
+        size: {
+            x: buildVolXmm,
+            y: buildVolYmm,
+            z: $buildVolumeZ.val()
+        },
+        unit: unit
+    });
+    viewer3d.setBuildVolume(settings.get('buildVolume'));
+    updateBuildVolumeUI();
+
 
 	$('#screen-diagonal-unit-in').prop('checked', false);
 	$('#screen-diagonal-unit-mm').prop('checked', true);
 	$screenDiagonalSize.val(diagonalMM);
 
+	updateScreenSettings();
 }
 
 // Initialize values
@@ -40,6 +55,6 @@ function initializeValues() {
 	});
 }
 
-$(window).bind('load', initializeValues);
-// $(document).ready(initializeValues);
+// $(window).bind('load', initializeValues);
+$(document).ready(initializeValues);
 // initializeValues();
