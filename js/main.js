@@ -514,7 +514,7 @@ function updateSlicerSettings() {
 
     getSlice($sliderInput.slider('getValue'));
 
-    updateSlicerUI();
+    updateSliderUI();
 }
 
 function flipGeometry() {
