@@ -1045,7 +1045,7 @@ loader.onError = errorHandler;
 var stl = 'stl/StressTest.stl';
 //var stl = 'stl/SLAcer.stl';
 
-// File url 
+// File url
 // var url = 'http://' + window.location.hostname + window.location.pathname + stl;
 var url = window.location.href + stl;
 
