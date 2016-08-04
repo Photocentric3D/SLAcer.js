@@ -72,3 +72,4 @@ function initializeValues() {
 }
 
 $(document).ready(initializeValues);
+
