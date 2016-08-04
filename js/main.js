@@ -1048,6 +1048,7 @@ var stl = 'stl/StressTest.stl';
 // File url
 // var url = 'http://' + window.location.hostname + window.location.pathname + stl;
 var url = window.location.href + stl;
+
 // Create http request object
 var xmlhttp = new XMLHttpRequest();
 
@@ -1065,3 +1066,5 @@ xmlhttp.onreadystatechange = function() {
 }
 
 xmlhttp.send();
+
+
