@@ -14,41 +14,22 @@ function setPrinterCalibrationSettings(printer) {
 	// if (Math.abs(dotsPermmX - dotsPermmY) >= 0.1) {
 	// 	return true;
 	// }
-	var dotsPermmDiagonal = findPythagoreanC(dotsPermmXYAverage, dotsPermmXYAverage);
-	var diagonalNumPixels = findPythagoreanC(monitorDriverConfig.DLP_X_Res, monitorDriverConfig.DLP_Y_Res);
-	var diagonalMM = Math.round(diagonalNumPixels / dotsPermmDiagonal);
 	var buildVolXmm = Math.round(monitorDriverConfig.DLP_X_Res / dotsPermmXYAverage);
 	var buildVolYmm = Math.round(monitorDriverConfig.DLP_Y_Res / dotsPermmXYAverage);
+	var diagonalMM = Math.round(findPythagoreanC(buildVolXmm, buildVolYmm));
 
     /* This is part of updateBuildVolumeSettings() from main.js. I only copied
     the necessary code that won't result in geometry error */
-    settings.set('buildVolume', {
-        size: {
-            x: buildVolXmm,
-            y: buildVolYmm,
-            z: $buildVolumeZ.val()
-        },
-        unit: 'mm'
-    });
-    viewer3d.setBuildVolume(settings.get('buildVolume'));
-    viewer3d.render();
-    updateBuildVolumeUI();
+    $buildVolumeX.val(buildVolXmm);
+    $buildVolumeY.val(buildVolYmm);
+    $buildVolumeZ.val(printer.configuration.machineConfig.PlatformZSize);
+    updateBuildVolumeSettings();
 
 
 	$('#screen-diagonal-unit-in').prop('checked', false);
 	$('#screen-diagonal-unit-mm').prop('checked', true);
 	
 	// After manually checking the mm unit, set the values then update UI
- //    settings.set('screen', {
- //        width   : $screenWidth.val(),
- //        height  : $screenHeight.val(),
- //        diagonal: {
- //            size: diagonalMM,
- //            unit: 'mm'
- //        }
- //    });
-	// updateScreenUI();
-
 	$screenDiagonalSize.val(diagonalMM);
 	updateScreenSettings();
 
@@ -79,6 +60,8 @@ function initializeValues() {
 	if (XYerr) {
 		// Error handling
 	}
+
+	// loader.load(/*insert file here*/);
 }
 
 $(document).ready(initializeValues);
