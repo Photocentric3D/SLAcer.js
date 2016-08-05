@@ -49,7 +49,7 @@ function setPrinterCalibrationSettings(printer) {
  //    });
 	// updateScreenUI();
 
-	$screenDiagonalSize.val(100);
+	$screenDiagonalSize.val(diagonalMM);
 	updateScreenSettings();
 
 	// No error occurred so return false
