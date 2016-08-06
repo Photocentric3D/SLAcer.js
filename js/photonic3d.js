@@ -42,6 +42,7 @@ function initializeValues() {
 	$slicerSpeedYes[0].checked = true;
 	$slicerSpeedNo[0].checked = false;
 	$slicerSpeedDelay.val(0);
+	makeButton();
 
 	// Update global javascript object with slicer settings
     settings.set('slicer.speed', $slicerSpeedYes[0].checked);
@@ -61,7 +62,42 @@ function initializeValues() {
 		// Error handling
 	}
 
+	
+
 	// loader.load(/*insert file here*/);
+}
+
+function makeZip() {
+	if (zipFile) {
+        var name = 'SLAcer';
+        if (loadedFile && loadedFile.name) {
+            name = loadedFile.name;
+        }
+        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip');
+        $location.path('/printables');
+    }
+}
+
+function uploadZip(zipFile) {
+	var blob = zipFile,
+    form = new FormData(),
+    request = new XMLHttpRequest();
+	form.append("blob",blob);
+	request.open(
+	            "POST",
+	            "/services/printerables//uploadPrintableFile",
+	            true
+	        );
+	request.send(form);
+}
+
+function makeButton() {
+	var btn	= document.getElementById("zip-button");
+	btn.onclick = function () {
+	    makeZip();
+	};
+	btn.id = "new-zip-button";
+	btn.innerHTML = "New Zip";	
 }
 
 $(document).ready(initializeValues);
