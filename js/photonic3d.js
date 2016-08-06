@@ -74,7 +74,7 @@ function makeZip() {
             name = loadedFile.name;
         }
         uploadZip(zipFile.generate({type: 'blob'}), name + '.zip');
-        window.location = "/printablesPage";
+        //window.location = "/printablesPage";
     }
 }
 
