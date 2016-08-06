@@ -74,30 +74,32 @@ function makeZip() {
             name = loadedFile.name;
         }
         uploadZip(zipFile.generate({type: 'blob'}), name + '.zip');
-        $location.path('/printables');
+        window.location = "/printablesPage";
     }
 }
 
-function uploadZip(zipFile) {
-	var blob = zipFile,
-    form = new FormData(),
-    request = new XMLHttpRequest();
-	form.append("blob",blob);
-	request.open(
-	            "POST",
-	            "/services/printerables//uploadPrintableFile",
-	            true
-	        );
+function uploadZip(zipFile, fileName) {
+	var blob = zipFile;
+    form = new FormData();
+	form.append("file",blob,fileName);
+	request = new XMLHttpRequest();
+	request.open("POST", "/services/printables/uploadPrintableFile");
 	request.send(form);
 }
 
 function makeButton() {
+	//rename original zip button
 	var btn	= document.getElementById("zip-button");
-	btn.onclick = function () {
+	btn.innerHTML = "Download Zip";	
+	//create new zip button
+	var newbtn = document.createElement("BUTTON");
+	newbtn.onclick = function () {
 	    makeZip();
-	};
-	btn.id = "new-zip-button";
-	btn.innerHTML = "New Zip";	
+	}
+	newbtn.id = "new-zip-button";
+	newbtn.className = "btn btn-primary";
+	newbtn.innerHTML = "Upload ZIP To Printables";
+	btn.parentNode.insertBefore(newbtn, btn);
 }
 
 $(document).ready(initializeValues);
