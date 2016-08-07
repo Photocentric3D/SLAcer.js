@@ -26,7 +26,6 @@ var settings = new SLAcer.Settings({
             collapsed: false,
             position : 1
         },
-        mirror: false,
         lifting: {
             speed : 50, // mm/min
             height: 3,  // mm
@@ -42,7 +41,8 @@ var settings = new SLAcer.Settings({
         panel: {
             collapsed: false,
             position : 3
-        }
+        },
+        mirror: false
     },
     buildVolume: {
         size     : { x: 100,  y: 100,  z: 100 }, // mm
@@ -468,9 +468,6 @@ var $slicerLightOn     = $slicerBody.find('#slicer-light-on');
 var $slicerLiftingSpeed  = $slicerBody.find('#slicer-lifting-speed');
 var $slicerLiftingHeight = $slicerBody.find('#slicer-lifting-height');
 
-var $slicerMirrorYes = $slicerBody.find('#slicer-mirror-yes');
-var $slicerMirrorNo  = $slicerBody.find('#slicer-mirror-no');
-
 var $slicerExportPNG = $slicerBody.find('#slicer-image-extension-png');
 var $slicerExportSVG = $slicerBody.find('#slicer-image-extension-svg');
 
@@ -503,8 +500,6 @@ function updateSlicerSettings() {
     settings.set('slicer.lifting.speed', $slicerLiftingSpeed.val());
     settings.set('slicer.lifting.height', $slicerLiftingHeight.val());
 
-    settings.set('slicer.mirror', $slicerMirrorYes[0].checked);
-
     settings.set('slicer.png', $slicerExportPNG[0].checked);
     settings.set('slicer.svg', $slicerExportSVG[0].checked);
 
@@ -516,14 +511,6 @@ function updateSlicerSettings() {
 
     updateSliderUI();
 }
-
-function flipGeometry() {
-    loadGeometry(slicer.mesh.geometry, true);
-    getSlice($sliderInput.slider('getValue'));
-}
-
-$slicerMirrorYes.on('change', flipGeometry);
-$slicerMirrorNo.on('change', flipGeometry);
 
 var sliceInterval;
 var expectedSliceInterval;
@@ -644,7 +631,6 @@ $abortButton.on('click', function(e) {
 });
 
 $('#slicer-image-extension-' + (settings.get('slicer.png') ? 'png' : 'svg')).prop('checked', true);
-$('#slicer-mirror-' + (settings.get('slicer.mirror') ? 'yes' : 'no')).prop('checked', true);
 $('#slicer-make-zip-' + (settings.get('slicer.zip') ? 'yes' : 'no')).prop('checked', true);
 $('#slicer-speed-' + (settings.get('slicer.speed') ? 'yes' : 'no')).prop('checked', true);
 $('#slicer input').on('input, change', updateSlicerSettings);
@@ -828,13 +814,17 @@ var $transformY       = $transformBody.find('#transform-y');
 var $transformZ       = $transformBody.find('#transform-z');
 var $transformButtons = $transformBody.find('button');
 
+var $transformMirrorYes = $transformBody.find('#transform-mirror-yes');
+var $transformMirrorNo  = $transformBody.find('#transform-mirror-no');
+
 var transformAction, transformations;
 
 function resetTransformValues() {
     transformAction = 'scale';
     transformations = {
-        scale : { x:1, y:1 , z:1 },
-        rotate: { x:0, y:0 , z:0 }
+        scale    : { x:1, y:1 , z:1 },
+        rotate   : { x:0, y:0 , z:0 },
+        translate: { x:0, y:0 , z:0 }
     };
     updateTransformAction();
 }
@@ -851,13 +841,19 @@ function updateTransformAction() {
         max  = 999;
         step = 0.01;
     }
-    else {
+    else if (transformAction == 'rotate') {
         min  = 0;
         max  = 360;
         step = 1;
     }
+    else {
+        min  = -9999;
+        max  = 9999;
+        step = 1;
+    }
 
-    $transformUniform.toggleClass('hidden', transformAction == 'rotate');
+    $transformUniform.toggleClass('hidden', transformAction != 'scale');
+    $transformZ.parent().toggleClass('hidden', transformAction == 'translate');
 
     $transformX.prop('min', min);
     $transformY.prop('min', min);
@@ -875,7 +871,7 @@ function updateTransformAction() {
 
 function updateTransformValues() {
     var current = transformations[transformAction];
-    var uniform = $('#transform input[type=radio]:checked').val() == 'yes';
+    var uniform = $('#transform-uniform input[type=radio]:checked').val() == 'yes';
     var input   = {
         x: parseFloat($transformX.val()),
         y: parseFloat($transformY.val()),
@@ -925,7 +921,7 @@ function updateTransformValues() {
             input.z / current.z
         );
     }
-    else {
+    else if (transformAction == 'rotate') {
         var deg     = Math.PI / 180;
         var offsets = {
             x: input.x - current.x,
@@ -937,15 +933,27 @@ function updateTransformValues() {
         slicer.mesh.geometry.rotateY(offsets.y * deg);
         slicer.mesh.geometry.rotateZ(offsets.z * deg);
     }
+    else {
+        var offsets = {
+            x: input.x - current.x,
+            y: input.y - current.y
+        };
+
+        slicer.mesh.geometry.translate(offsets.x, offsets.y, 0);
+    }
 
     current.x = input.x;
     current.y = input.y;
     current.z = input.z;
 
-    //var currentLayer = settings.get('');
-    loadGeometry(slicer.mesh.geometry);
+    if (transformAction != 'translate') {
+        loadGeometry(slicer.mesh.geometry, false);
+        // stay at current position
+        var current = transformations['translate'];
+        slicer.mesh.geometry.translate(current.x, current.y, current.z);
+    }
+
     getSlice($sliderInput.slider('getValue'));
-    //viewer3d.render();
 }
 
 $transformButtons.on('click', function(e) {
@@ -959,6 +967,16 @@ $transformButtons.on('click', function(e) {
     updateTransformValues();
 });
 
+function flipGeometry() {
+    settings.set('transform.mirror', $transformMirrorYes[0].checked);
+    loadGeometry(slicer.mesh.geometry, true);
+    getSlice($sliderInput.slider('getValue'));
+}
+
+$transformMirrorYes.on('change', flipGeometry);
+$transformMirrorNo.on('change', flipGeometry);
+
+$('#transform-mirror-' + (settings.get('transform.mirror') ? 'yes' : 'no')).prop('checked', true);
 $('#transform select').on('change', updateTransformAction);
 $('#transform input').on('change', updateTransformValues);
 resetTransformValues();
@@ -991,7 +1009,7 @@ function loadGeometry(geometry, mirror) {
         removeShapes();
 
         // flip geometry
-        if (mirror || settings.get('slicer.mirror')) {
+        if (mirror) {
             geometry.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
         }
 
@@ -1030,7 +1048,7 @@ function ultraMegaDirtyFix() {
 // On Geometry loaded
 loader.onGeometry = function(geometry) {
     resetTransformValues();
-    loadGeometry(geometry);
+    loadGeometry(geometry, settings.get('transform.mirror'));
     ultraMegaDirtyFix();
 };
 
