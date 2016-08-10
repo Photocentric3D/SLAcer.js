@@ -11,6 +11,7 @@ function setPrinterCalibrationSettings(printer) {
 	var dotsPermmX = slicingProfile.DotsPermmX;
 	var dotsPermmY = slicingProfile.DotsPermmY;
 	var dotsPermmXYAverage = (dotsPermmX + dotsPermmY) / 2;
+	// Uncomment when not in testing anymore
 	// if (Math.abs(dotsPermmX - dotsPermmY) >= 0.1) {
 	// 	return true;
 	// }
@@ -22,12 +23,12 @@ function setPrinterCalibrationSettings(printer) {
 	$slicerSpeedYes[0].checked = true;
 	$slicerSpeedNo[0].checked = false;
 	$slicerSpeedDelay.val(0);
-	// // Convert mm to microns
-	// $slicerLayerHeight.val(/*slicingProfile.InkConfig.SliceHeight * 1000*/100);
-	// console.log($slicerLayerHeight.val());
+	// Convert mm to microns
+	$slicerLayerHeight.val(slicingProfile.InkConfig[0].SliceHeight * 1000);
+
     settings.set('slicer.speed', $slicerSpeedYes[0].checked);
     settings.set('slicer.speedDelay', $slicerSpeedDelay.val());
-    // settings.set('slicer.layers.height', $slicerLayerHeight.val());
+    settings.set('slicer.layers.height', $slicerLayerHeight.val());
 	
     /* This is part of updateBuildVolumeSettings() from main.js. I only copied
     the necessary code that won't result in geometry error */
@@ -90,11 +91,11 @@ function uploadZip(zipFile, fileName) {
 	request = new XMLHttpRequest();
 	request.open("POST", "/services/printables/uploadPrintableFile");
 	// When the request is successfully sent, load the tab to printablesPage
-	request.onreadystatechange = function () {
-		if (request.readyState == 4 && request.status == 200) {
-			window.open('/printablesPage', '_self');
-		}
-	}
+	// request.onreadystatechange = function () {
+	// 	if (request.readyState == 4 && request.status == 200) {
+	// 		window.open('/printablesPage', '_self');
+	// 	}
+	// }
     request.send(form);
 }
 
