@@ -103,9 +103,13 @@ function uploadZip(zipFile, fileName) {
 function makeButton() {
 	//rename original zip button
 	var btn	= document.getElementById("zip-button");
-	btn.innerHTML = '<span class="glyphicon glyphicon-compressed"></span> ZIP'	
+	btn.innerHTML = '<span class="glyphicon glyphicon-compressed"></span> ZIP';
+	
 	//create new zip button
 	var newbtn = document.createElement("BUTTON");
+	$(newbtn).css({
+	   'margin-top' : '10px'
+	});	
 	btn.parentNode.insertBefore(newbtn, btn.nextSibling);
 	newbtn.onclick = function () {
 	    makeZip();
