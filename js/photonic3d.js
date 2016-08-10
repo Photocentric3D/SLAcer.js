@@ -91,28 +91,36 @@ function uploadZip(zipFile, fileName) {
 	request = new XMLHttpRequest();
 	request.open("POST", "/services/printables/uploadPrintableFile");
 	// When the request is successfully sent, load the tab to printablesPage
-	// request.onreadystatechange = function () {
-	// 	if (request.readyState == 4 && request.status == 200) {
-	// 		window.open('/printablesPage', '_self');
-	// 	}
-	// }
+	request.onreadystatechange = function () {
+		if (request.readyState == 4 && request.status == 200) {
+			// window.open('/printablesPage', '_self');
+			alert("Upload successful! Refresh printables page on Photonic3D to see the file.");
+		}
+	}
     request.send(form);
 }
 
 function makeButton() {
 	//rename original zip button
 	var btn	= document.getElementById("zip-button");
-	btn.innerHTML = '<span class="glyphicon glyphicon-compressed"></span> Download ZIP'	
+	btn.innerHTML = '<span class="glyphicon glyphicon-compressed"></span> ZIP'	
 	//create new zip button
 	var newbtn = document.createElement("BUTTON");
+	btn.parentNode.insertBefore(newbtn, btn.nextSibling);
 	newbtn.onclick = function () {
 	    makeZip();
 	}
 	newbtn.id = "new-zip-button";
 	newbtn.className = "btn btn-primary";
-	// $('#new-zip-button').prop('disabled', 'disabled');
-	newbtn.innerHTML = '<span class="glyphicon glyphicon-upload"></span> Upload ZIP To Printables'
-	btn.parentNode.insertBefore(newbtn, btn);
+	newbtn.disabled = true;
+	newbtn.innerHTML = '<span class="glyphicon glyphicon-upload"></span> Upload ZIP To Photonic3D';
+}
+
+var oldEndSlicing = endSlicing;
+
+endSlicing = function() {
+	oldEndSlicing();
+	$('#new-zip-button').prop('disabled', false);
 }
 
 $(document).ready(initializeValues);
