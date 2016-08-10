@@ -36,16 +36,19 @@ function setPrinterCalibrationSettings(printer) {
     $buildVolumeY.val(buildVolYmm);
     $buildVolumeZ.val(printer.configuration.machineConfig.PlatformZSize);
     updateBuildVolumeSettings();
-
-
-	$('#screen-diagonal-unit-in').prop('checked', false);
-	$('#screen-diagonal-unit-mm').prop('checked', true);
 	
-	// After manually checking the mm unit, set the values then update UI
-	$screenDiagonalSize.val(diagonalMM);
+	var unit = settings.get('screen.diagonal.unit')
+	var convert = unit == 'in';
+	
+	$screenDiagonalSize.val(convert ? parseUnit(diagonalMM, unit) : diagonalMM);
 	$screenWidth.val(monitorDriverConfig.DLP_X_Res);
 	$screenHeight.val(monitorDriverConfig.DLP_Y_Res);
 	updateScreenSettings();
+	if (convert) {
+		$('#screen-diagonal-unit-in').prop('checked', false);
+		$('#screen-diagonal-unit-mm').prop('checked', true);
+		updateScreenSettings();		
+	}
 
 	// No error occurred so return false
 	return false;
@@ -120,7 +123,7 @@ var oldEndSlicing = endSlicing;
 
 endSlicing = function() {
 	oldEndSlicing();
-	$('#new-zip-button').prop('disabled', false);
+	$('#new-zip-button').prop('disabled', !zipFile);
 }
 
 $(document).ready(initializeValues);
