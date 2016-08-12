@@ -11,6 +11,7 @@ function setPrinterCalibrationSettings(printer) {
 	var dotsPermmX = slicingProfile.DotsPermmX;
 	var dotsPermmY = slicingProfile.DotsPermmY;
 	var dotsPermmXYAverage = (dotsPermmX + dotsPermmY) / 2;
+	// Uncomment when not in testing anymore
 	// if (Math.abs(dotsPermmX - dotsPermmY) >= 0.1) {
 	// 	return true;
 	// }
@@ -18,20 +19,36 @@ function setPrinterCalibrationSettings(printer) {
 	var buildVolYmm = Math.round(monitorDriverConfig.DLP_Y_Res / dotsPermmXYAverage);
 	var diagonalMM = Math.round(findPythagoreanC(buildVolXmm, buildVolYmm));
 
+	// Update global javascript object with slicer settings
+	$slicerSpeedYes[0].checked = true;
+	$slicerSpeedNo[0].checked = false;
+	$slicerSpeedDelay.val(0);
+	// Convert mm to microns
+	$slicerLayerHeight.val(slicingProfile.InkConfig[0].SliceHeight * 1000);
+
+    settings.set('slicer.speed', $slicerSpeedYes[0].checked);
+    settings.set('slicer.speedDelay', $slicerSpeedDelay.val());
+    settings.set('slicer.layers.height', $slicerLayerHeight.val());
+	
     /* This is part of updateBuildVolumeSettings() from main.js. I only copied
     the necessary code that won't result in geometry error */
     $buildVolumeX.val(buildVolXmm);
     $buildVolumeY.val(buildVolYmm);
     $buildVolumeZ.val(printer.configuration.machineConfig.PlatformZSize);
     updateBuildVolumeSettings();
-
-
-	$('#screen-diagonal-unit-in').prop('checked', false);
-	$('#screen-diagonal-unit-mm').prop('checked', true);
 	
-	// After manually checking the mm unit, set the values then update UI
-	$screenDiagonalSize.val(diagonalMM);
+	var unit = settings.get('screen.diagonal.unit')
+	var convert = unit == 'in';
+	
+	$screenDiagonalSize.val(convert ? parseUnit(diagonalMM, unit) : diagonalMM);
+	$screenWidth.val(monitorDriverConfig.DLP_X_Res);
+	$screenHeight.val(monitorDriverConfig.DLP_Y_Res);
 	updateScreenSettings();
+	if (convert) {
+		$('#screen-diagonal-unit-in').prop('checked', false);
+		$('#screen-diagonal-unit-mm').prop('checked', true);
+		updateScreenSettings();		
+	}
 
 	// No error occurred so return false
 	return false;
@@ -39,17 +56,10 @@ function setPrinterCalibrationSettings(printer) {
 
 // Initialize values
 function initializeValues() {
-	$slicerSpeedYes[0].checked = true;
-	$slicerSpeedNo[0].checked = false;
-	$slicerSpeedDelay.val(0);
 	makeButton();
 
-	// Update global javascript object with slicer settings
-    settings.set('slicer.speed', $slicerSpeedYes[0].checked);
-    settings.set('slicer.speedDelay', $slicerSpeedDelay.val());
-	
-	settings.set('#slicer.panel.collapsed', true);
-	$slicerBody.collapse('hide');
+	// settings.set('#slicer.panel.collapsed', true);
+	// $slicerBody.collapse('hide');
 
 	var XYerr = false;
 	var printer = $.get( "/services/printers/getFirstAvailablePrinter", function( data ) {
@@ -60,21 +70,20 @@ function initializeValues() {
 
 	if (XYerr) {
 		// Error handling
+		alert("Your DotsPermmX and DotsPermmY are more than 0.1 mm apart");
 	}
 
-	
-
-	// loader.load(/*insert file here*/);
 }
 
 function makeZip() {
-	if (zipFile) {
+	if (zipFile === null || zipFile === undefined) {
+		alert("You must first slice images to generate a zip file.");
+	} else {
         var name = 'SLAcer';
         if (loadedFile && loadedFile.name) {
             name = loadedFile.name;
         }
-        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip');
-        //window.location = "/printablesPage";
+        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip' + '.zip');
     }
 }
 
@@ -84,22 +93,41 @@ function uploadZip(zipFile, fileName) {
 	form.append("file",blob,fileName);
 	request = new XMLHttpRequest();
 	request.open("POST", "/services/printables/uploadPrintableFile");
-	request.send(form);
+	// When the request is successfully sent, load the tab to printablesPage
+	request.onreadystatechange = function () {
+		if (request.readyState == 4 && request.status == 200) {
+			// window.open('/printablesPage', '_self');
+			alert("Upload successful! Refresh printables page on Photonic3D to see the file.");
+		}
+	}
+    request.send(form);
 }
 
 function makeButton() {
 	//rename original zip button
 	var btn	= document.getElementById("zip-button");
-	btn.innerHTML = "Download Zip";	
+	btn.innerHTML = '<span class="glyphicon glyphicon-compressed"></span> ZIP';
+	
 	//create new zip button
 	var newbtn = document.createElement("BUTTON");
+	$(newbtn).css({
+	   'margin-top' : '10px'
+	});	
+	btn.parentNode.insertBefore(newbtn, btn.nextSibling);
 	newbtn.onclick = function () {
 	    makeZip();
 	}
 	newbtn.id = "new-zip-button";
 	newbtn.className = "btn btn-primary";
-	newbtn.innerHTML = "Upload ZIP To Printables";
-	btn.parentNode.insertBefore(newbtn, btn);
+	newbtn.disabled = true;
+	newbtn.innerHTML = '<span class="glyphicon glyphicon-upload"></span> Upload ZIP To Photonic3D';
+}
+
+var oldEndSlicing = endSlicing;
+
+endSlicing = function() {
+	oldEndSlicing();
+	$('#new-zip-button').prop('disabled', !zipFile);
 }
 
 $(document).ready(initializeValues);
