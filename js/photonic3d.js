@@ -82,7 +82,7 @@ function makeZip() {
         if (loadedFile && loadedFile.name) {
             name = loadedFile.name;
         }
-        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip' + '.zip');
+        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip');
     }
 }
 
