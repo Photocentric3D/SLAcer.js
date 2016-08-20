@@ -19,19 +19,16 @@ function setPrinterCalibrationSettings(printer) {
 	var buildVolYmm = Math.round(monitorDriverConfig.DLP_Y_Res / dotsPermmXYAverage);
 	var diagonalMM = Math.round(findPythagoreanC(buildVolXmm, buildVolYmm));
 
-	// Update global javascript object with slicer settings
 	$slicerSpeedYes[0].checked = true;
 	$slicerSpeedNo[0].checked = false;
 	$slicerSpeedDelay.val(0);
 	// Convert mm to microns
-	$slicerLayerHeight.val(slicingProfile.InkConfig[0].SliceHeight * 1000);
+	$slicerLayerHeight.val(slicingProfile.InkConfig[slicingProfile.selectedInkConfigIndex].SliceHeight * 1000);
 
     settings.set('slicer.speed', $slicerSpeedYes[0].checked);
     settings.set('slicer.speedDelay', $slicerSpeedDelay.val());
     settings.set('slicer.layers.height', $slicerLayerHeight.val());
 	
-    /* This is part of updateBuildVolumeSettings() from main.js. I only copied
-    the necessary code that won't result in geometry error */
     $buildVolumeX.val(buildVolXmm);
     $buildVolumeY.val(buildVolYmm);
     $buildVolumeZ.val(printer.configuration.machineConfig.PlatformZSize);
@@ -62,10 +59,12 @@ function initializeValues() {
 	// $slicerBody.collapse('hide');
 
 	var XYerr = false;
-	var printer = $.get( "/services/printers/getFirstAvailablePrinter", function( data ) {
+	$.get( "/services/printers/getFirstAvailablePrinter", function( data ) {
 		if (data !== null && data !== undefined) {
 			XYerr = setPrinterCalibrationSettings(data);
 		}
+	}).fail(function (data) {
+		alert("Error: "+ data.responseText);
 	});
 
 	if (XYerr) {
@@ -83,7 +82,7 @@ function makeZip() {
         if (loadedFile && loadedFile.name) {
             name = loadedFile.name;
         }
-        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip' + '.zip');
+        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip');
     }
 }
 
@@ -93,7 +92,7 @@ function uploadZip(zipFile, fileName) {
 	form.append("file",blob,fileName);
 	request = new XMLHttpRequest();
 	request.open("POST", "/services/printables/uploadPrintableFile");
-	// When the request is successfully sent, load the tab to printablesPage
+	// When the request is successfully sent, alert the user
 	request.onreadystatechange = function () {
 		if (request.readyState == 4 && request.status == 200) {
 			// window.open('/printablesPage', '_self');
