@@ -75,6 +75,7 @@ function initializeValues() {
 }
 
 function makeZip() {
+	$('#uploadzip-icon').prop('class', 'glyphicon glyphicon-refresh glyphicon-spin');
 	if (zipFile === null || zipFile === undefined) {
 		alert("You must first slice images to generate a zip file.");
 	} else {
@@ -96,6 +97,7 @@ function uploadZip(zipFile, fileName) {
 	request.onreadystatechange = function () {
 		if (request.readyState == 4 && request.status == 200) {
 			// window.open('/printablesPage', '_self');
+			$('#uploadzip-icon').prop('class', 'glyphicon glyphicon-upload');
 			alert("Upload successful! Refresh printables page on Photonic3D to see the file.");
 		}
 	}
@@ -119,7 +121,7 @@ function makeButton() {
 	newbtn.id = "new-zip-button";
 	newbtn.className = "btn btn-primary";
 	newbtn.disabled = true;
-	newbtn.innerHTML = '<span class="glyphicon glyphicon-upload"></span> Upload ZIP To Photonic3D';
+	newbtn.innerHTML = '<i class="glyphicon glyphicon-upload" id="uploadzip-icon"></i> Upload ZIP To Photonic3D';
 }
 
 var oldEndSlicing = endSlicing;
