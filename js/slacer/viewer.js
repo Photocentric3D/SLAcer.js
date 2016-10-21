@@ -32,7 +32,12 @@ var SLAcer = SLAcer || {};
         // create main objects
         self.scene    = new THREE.Scene();
         self.camera   = new THREE.PerspectiveCamera();
-        self.renderer = new THREE.WebGLRenderer({ antialias: self.settings.antialias });
+        self.renderer = new THREE.WebGLRenderer({ 
+		antialias: self.settings.antialias, 
+		alpha: true
+		});
+		
+		self.renderer.setClearColor( 0xff00ff, 0);
 
         // assign camera settings
         _.assign(self.camera, self.settings.camera);

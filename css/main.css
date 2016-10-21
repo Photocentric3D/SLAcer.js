@@ -24,6 +24,7 @@
     background-color: #eeeeee;
     border: 1px dashed #cccccc;
 }
+
 /*
 #sidebar .panel-body {
     padding-bottom: 0;
@@ -76,7 +77,7 @@
     top: 51px;
     bottom: 0;
     right: 0;
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
     border-left: 1px solid #eeeeee;
 }
 
