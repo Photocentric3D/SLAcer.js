@@ -1,4 +1,6 @@
 // Photonic3D Modifications and Features to SLAcer
+// Photocentric add on
+ $('.verbergen').hide(1);
 
 // Utils
 function findPythagoreanC(a, b) {
@@ -15,8 +17,8 @@ function setPrinterCalibrationSettings(printer) {
 	// if (Math.abs(dotsPermmX - dotsPermmY) >= 0.1) {
 	// 	return true;
 	// }
-	var buildVolXmm = Math.round(monitorDriverConfig.DLP_X_Res / dotsPermmXYAverage);
-	var buildVolYmm = Math.round(monitorDriverConfig.DLP_Y_Res / dotsPermmXYAverage);
+	var buildVolXmm = Math.round(slicingProfile.XResolution / dotsPermmX);
+	var buildVolYmm = Math.round(slicingProfile.YResolution / dotsPermmY);
 	var diagonalMM = Math.round(findPythagoreanC(buildVolXmm, buildVolYmm));
 
 	$slicerSpeedYes[0].checked = true;
@@ -38,8 +40,8 @@ function setPrinterCalibrationSettings(printer) {
 	var convert = unit == 'in';
 	
 	$screenDiagonalSize.val(convert ? parseUnit(diagonalMM, unit) : diagonalMM);
-	$screenWidth.val(monitorDriverConfig.DLP_X_Res);
-	$screenHeight.val(monitorDriverConfig.DLP_Y_Res);
+	$screenWidth.val(slicingProfile.XResolution);
+	$screenHeight.val(slicingProfile.YResolution);
 	updateScreenSettings();
 	if (convert) {
 		$('#screen-diagonal-unit-in').prop('checked', false);

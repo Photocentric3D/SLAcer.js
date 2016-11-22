@@ -21,7 +21,7 @@ var settings = new SLAcer.Settings({
         svg: false,
         png: true,
         speed: false,
-        speedDelay: 10, // ms
+        speedDelay: 0, // ms
         panel: {
             collapsed: false,
             position : 1
@@ -1060,7 +1060,7 @@ loader.onError = errorHandler;
 // -----------------------------------------------------------------------------
 // example STL file
 //var stl = 'stl/Octocat-v2.stl';
-var stl = 'stl/StressTest.stl';
+//var stl = 'stl/StressTest.stl';
 //var stl = 'stl/SLAcer.stl';
 
 // File url
