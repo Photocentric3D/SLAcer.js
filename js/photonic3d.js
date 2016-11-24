@@ -55,8 +55,11 @@ function setPrinterCalibrationSettings(printer) {
 
 // Initialize values
 function initializeValues() {
-	makeButton();
 
+	var btn	= document.getElementById("print-button");
+	btn.onclick= function(){
+		makeZip();
+	}
 	// settings.set('#slicer.panel.collapsed', true);
 	// $slicerBody.collapse('hide');
 
@@ -85,11 +88,11 @@ function makeZip() {
         if (loadedFile && loadedFile.name) {
             name = loadedFile.name;
         }
-        uploadZip(zipFile.generate({type: 'blob'}), name + '.zip');
+        printZip(zipFile.generate({type: 'blob'}), name + '.zip');
     }
 }
 
-function uploadZip(zipFile, fileName) {
+function printZip(zipFile, fileName) {
 	var blob = zipFile;
     form = new FormData();
 	form.append("file",blob,fileName);
@@ -100,37 +103,19 @@ function uploadZip(zipFile, fileName) {
 		if (request.readyState == 4 && request.status == 200) {
 			// window.open('/printablesPage', '_self');
 			$('#uploadzip-icon').prop('class', 'glyphicon glyphicon-upload');
-			alert("Upload successful! Refresh printables page on Photonic3D to see the file.");
+			$.post("/services/printables/print/"+fileName, function(data){
+				alert(fileName+" is now printing!");
+			});
 		}
 	}
     request.send(form);
-}
-
-function makeButton() {
-	//rename original zip button
-	var btn	= document.getElementById("zip-button");
-	btn.innerHTML = '<span class="glyphicon glyphicon-compressed"></span> ZIP';
-	
-	//create new zip button
-	var newbtn = document.createElement("BUTTON");
-	$(newbtn).css({
-	   'margin-top' : '10px'
-	});	
-	btn.parentNode.insertBefore(newbtn, btn.nextSibling);
-	newbtn.onclick = function () {
-	    makeZip();
-	}
-	newbtn.id = "new-zip-button";
-	newbtn.className = "btn btn-primary";
-	newbtn.disabled = true;
-	newbtn.innerHTML = '<i class="glyphicon glyphicon-upload" id="uploadzip-icon"></i> Upload ZIP To Photonic3D';
 }
 
 var oldEndSlicing = endSlicing;
 
 endSlicing = function() {
 	oldEndSlicing();
-	$('#new-zip-button').prop('disabled', !zipFile);
+	$('#print-button').prop('disabled', !zipFile);
 }
 
 $(document).ready(initializeValues);

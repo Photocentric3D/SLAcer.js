@@ -15,17 +15,14 @@
             <div id="sidebar">
 
                 <div class="form-group">
-                    <button id="open-viewer-2d" class="btn btn-primary" type="button">
-                        <span class="glyphicon glyphicon-picture"></span> 2D viewer
-                    </button>
                     <button id="slice-button" class="btn btn-success" type="button">
                         <span class="glyphicon glyphicon-align-center"></span> Slice
                     </button>
                     <button id="abort-button" class="btn btn-danger hidden" type="button">
                         <span class="glyphicon glyphicon-off"></span> Abort
                     </button>
-                    <button id="zip-button" class="btn btn-info" type="button" disabled="disabled">
-                        <span class="glyphicon glyphicon-compressed"></span> ZIP
+                    <button id="print-button" class="btn btn-success" type="button" disabled="disabled">
+                        <span class="glyphicon glyphicon-print"></span> Print
                     </button>
                 </div>
 
@@ -164,8 +161,7 @@
                         </div>
 						<div class="verbergen">
                         <hr />
-						
-						
+
                         <div class="form-group">
                             <label for="slicer-image-extension">Output type</label>
                             <input type="radio" name="slicer-image-extension" id="slicer-image-extension-png" value="png" checked="checked" /> png
@@ -193,7 +189,6 @@
                             <label for="slicer-speed-delay">Speed mode<br />delay <small>(ms)</small></label>
                             <input type="number" id="slicer-speed-delay" class="form-control input-sm" placeholder="100" min="1" />
                         </div>
-						</div>
                     </div>
                 </div><!-- #slicer -->
 
