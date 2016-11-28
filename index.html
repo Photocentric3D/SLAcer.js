@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -13,17 +13,22 @@
     <body>
         <div class="body container-fluid">
             <div id="sidebar">
-
-                <div class="form-group">
+                <div class="form-group" style="display:inline-block;">
                     <button id="slice-button" class="btn btn-success" type="button">
                         <span class="glyphicon glyphicon-align-center"></span> Slice
                     </button>
                     <button id="abort-button" class="btn btn-danger hidden" type="button">
                         <span class="glyphicon glyphicon-off"></span> Abort
                     </button>
-                    <button id="print-button" class="btn btn-success" type="button" disabled="disabled">
-                        <span class="glyphicon glyphicon-print"></span> Print
-                    </button>
+
+     	           <div class=" btn-group" style="display:inline-block;">
+        	            <button id="upload-button" class="btn btn-success" type="button" disabled="disa$
+                	        <span class="glyphicon glyphicon-upload"> </span> Save
+	                    </button>
+        	            <button id="print-button" class="btn btn-success" type="button" disabled="disab$
+                	        <span class="glyphicon glyphicon-print"></span> Print
+	                    </button>
+        	   y</div>
                 </div>
 
                 <div id="transform" class="panel panel-default">

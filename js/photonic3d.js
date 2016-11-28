@@ -57,9 +57,11 @@ function setPrinterCalibrationSettings(printer) {
 function initializeValues() {
 
 	var btn	= document.getElementById("print-button");
-	btn.onclick= function(){
-		makeZip();
-	}
+	btn.onclick= function(){makeZip(printZip);};
+
+	btn	= document.getElementById("print-button");
+	btn.onclick= function(){makeZip(saveZip);};
+
 	// settings.set('#slicer.panel.collapsed', true);
 	// $slicerBody.collapse('hide');
 
@@ -79,7 +81,7 @@ function initializeValues() {
 
 }
 
-function makeZip() {
+function makeZip(action) {
 	$('#uploadzip-icon').prop('class', 'glyphicon glyphicon-refresh glyphicon-spin');
 	if (zipFile === null || zipFile === undefined) {
 		alert("You must first slice images to generate a zip file.");
@@ -88,7 +90,7 @@ function makeZip() {
         if (loadedFile && loadedFile.name) {
             name = loadedFile.name;
         }
-        printZip(zipFile.generate({type: 'blob'}), name + '.zip');
+        action(zipFile.generate({type: 'blob'}), name + '.zip');
     }
 }
 
@@ -111,11 +113,29 @@ function printZip(zipFile, fileName) {
     request.send(form);
 }
 
+function saveZip(zipFile, fileName) {
+	var blob = zipFile;
+    form = new FormData();
+	form.append("file",blob,fileName);
+	request = new XMLHttpRequest();
+	request.open("POST", "/services/printables/uploadPrintableFile");
+	// When the request is successfully sent, alert the user
+	request.onreadystatechange = function () {
+		if (request.readyState == 4 && request.status == 200) {
+			// window.open('/printablesPage', '_self');
+			$('#uploadzip-icon').prop('class', 'glyphicon glyphicon-upload');
+		}
+	}
+    request.send(form);
+}
+
+
 var oldEndSlicing = endSlicing;
 
 endSlicing = function() {
 	oldEndSlicing();
 	$('#print-button').prop('disabled', !zipFile);
+	$('#upload-button').prop('disabled', !zipFile);
 }
 
 $(document).ready(initializeValues);
