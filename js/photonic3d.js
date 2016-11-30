@@ -60,7 +60,7 @@ function initializeValues() {
 	var btn	= document.getElementById("print-button");
 	btn.onclick= function(){makeZip(printZip);};
 
-	var btn	= document.getElementById("upload-button");
+	btn	= document.getElementById("upload-button");
 	btn.onclick= function(){makeZip(saveZip);};
 
 	// settings.set('#slicer.panel.collapsed', true);
