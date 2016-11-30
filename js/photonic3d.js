@@ -11,6 +11,7 @@ function setPrinterCalibrationSettings(printer) {
 	var dotsPermmX = slicingProfile.DotsPermmX;
 	var dotsPermmY = slicingProfile.DotsPermmY;
 	var dotsPermmXYAverage = (dotsPermmX + dotsPermmY) / 2;
+	
 	// Uncomment when not in testing anymore
 	// if (Math.abs(dotsPermmX - dotsPermmY) >= 0.1) {
 	// 	return true;
@@ -25,9 +26,11 @@ function setPrinterCalibrationSettings(printer) {
 	// Convert mm to microns
 	$slicerLayerHeight.val(slicingProfile.InkConfig[slicingProfile.selectedInkConfigIndex].SliceHeight * 1000);
 
+
     settings.set('slicer.speed', $slicerSpeedYes[0].checked);
     settings.set('slicer.speedDelay', $slicerSpeedDelay.val());
     settings.set('slicer.layers.height', $slicerLayerHeight.val());
+	settings.set('printer.name', printer.configuration.name);
 	
     $buildVolumeX.val(buildVolXmm);
     $buildVolumeY.val(buildVolYmm);
@@ -106,9 +109,10 @@ function printZip(zipFile, fileName) {
 		if (request.readyState == 4 && request.status == 200) {
 			// window.open('/printablesPage', '_self');
 			$('#uploadzip-icon').prop('class', 'glyphicon glyphicon-upload');
-			$.post("/services/printables/print/"+fileName, function(data){
-				alert(fileName+" is now printing!");
-			});
+			$.getJSON("/services/printers/startJob/"+fileName+"/"+settings.get('printer.name'))
+				.done(function(data){
+				alert(fileName+" is now printing on "+settings.get('printer.name')+"!");
+				});
 		}
 	}
     request.send(form);
