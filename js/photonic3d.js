@@ -124,6 +124,7 @@ function saveZip(zipFile, fileName) {
 		if (request.readyState == 4 && request.status == 200) {
 			// window.open('/printablesPage', '_self');
 			$('#uploadzip-icon').prop('class', 'glyphicon glyphicon-upload');
+			alert("Saved! View the sliced file on the 'printables' page.");
 		}
 	}
     request.send(form);
