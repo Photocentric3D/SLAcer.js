@@ -1,6 +1,4 @@
-// Photonic3D Modifications and Features to SLAcer
-// Photocentric add on
- $('.verbergen').hide(1);
+
 
 // Utils
 function findPythagoreanC(a, b) {
@@ -55,6 +53,9 @@ function setPrinterCalibrationSettings(printer) {
 
 // Initialize values
 function initializeValues() {
+	// Photonic3D Modifications and Features to SLAcer
+	// Photocentric add on
+ 	$('.verbergen').hide(1);
 
 	var btn	= document.getElementById("print-button");
 	btn.onclick= function(){makeZip(printZip);};
